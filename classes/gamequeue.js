@@ -1,6 +1,6 @@
 module.exports = {
 	Queue: function(owner){
 		this.owner = owner
-		this.players = []
+		this.players = [owner]
 	}
 }
