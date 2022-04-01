@@ -7,11 +7,19 @@ module.exports = {
 		this.games = {}
 		this.queues = {}
 		this.activeUsers = []
+		this.awaitingUsers = {}
+
 		this.isUserActive = function(userId){
 			for (let i in this.activeUsers){
 				if (userId == this.activeUsers[i]) {
 					return true
 				}
+			}
+			return false
+		}
+		this.isUserAwaited = function(userId){
+			if (userId in this.awaitingUsers) {
+				return true
 			}
 			return false
 		}
@@ -25,8 +33,17 @@ module.exports = {
 				return "You are already in a game or queue! Use /leave to leave."
 			}
 		}
-		this.startGame = function(players, owner){
-			this.games[owner.id] = new Game.Game(players)
+		this.startGame = function(owner, channel){
+			if (owner.tag in this.queues) {
+				this.games[owner.id] = new Game.Meyer(owner, Object.assign([],this.queues[owner.tag].players), channel) // Object.assign clones the object and not just the reference
+				delete this.queues[owner.tag]
+				
+				this.awaitingUsers[owner.id] = owner.id // Test
+
+				return `Game started succesfully!\n${this.formatPlayerlist(this.games[owner.id].players)}`
+			} else {
+				return "You are not the owner of an active queue!"
+			}
 		}
 		this.joinQueue = function(user, queueName){
 			console.log(queueName)
@@ -36,15 +53,19 @@ module.exports = {
 			else if (this.queues[queueName]) {
 				this.queues[queueName].players.push(user)
 				this.activeUsers.push(user.id)
-				this.tempPlayers = "```"
-				this.queues[queueName].players.forEach(player => {
-					this.tempPlayers += `${player.tag}\n`
-				});
-				this.tempPlayers += "```"
-				return `You succesfully joined ${queueName}!\nPlayers in this queue:\n${this.tempPlayers}`
+				return `You succesfully joined ${queueName}!\n${this.formatPlayerlist(this.queues[queueName].players)}`
 			} else {
 				return "This queue does not exist!"
 			}
+		}
+		this.formatPlayerlist = function(playerList){
+			console.log(playerList)
+			this.tempPlayers = "**Player list:**\n```"
+				playerList.forEach(player => {
+					this.tempPlayers += `${player.tag}\n`
+				});
+			this.tempPlayers += "```"
+			return this.tempPlayers
 		}
 
 	}
