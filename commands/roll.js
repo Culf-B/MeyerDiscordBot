@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
+const { numbers, names } = require("../numbers.json")
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -10,8 +11,15 @@ module.exports = {
 
 				let game = manager.games[manager.awaitingUsers[interaction.user.id]]
 				console.log(game)
+				console.log(game.awaitedAction)
 				if (game.awaitedAction == "roll"){
-					await interaction.reply({content: `Your roll: ${game.roll(interaction.user.id)}`, ephemeral: true})
+					let roll = game.roll(interaction.user.id)
+					let rollText = `${roll[0]}${roll[1]}`
+					let value = numbers[roll[0].toString()][roll[1].toString()]
+					if (names[value]){
+						rollText += ` (${names[value]})`
+					}
+					await interaction.reply({content: `Your roll: ${rollText}`, ephemeral: true})
 					await interaction.channel.send(`${interaction.user.tag} just rolled the dice!`)
 				}
 			}
