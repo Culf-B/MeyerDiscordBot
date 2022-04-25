@@ -25,7 +25,6 @@ module.exports = {
 		}
 		this.newGame = function(owner){
 			if (!this.isUserActive(owner.id)){
-				console.log(this.activeUsers)
 				this.activeUsers.push(owner.id)
 				this.queues[owner.tag] = new Queue.Queue(owner)
 				return `Queue started!\nType "/join ${owner.tag}" to join.`
@@ -38,7 +37,7 @@ module.exports = {
 				this.games[owner.id] = new Game.Meyer(owner, Object.assign([],this.queues[owner.tag].players), channel) // Object.assign clones the object and not just the reference
 				delete this.queues[owner.tag]
 				
-				this.awaitingUsers[owner.id] = owner.id // Test
+				this.awaitingUsers[owner.id] = owner.id
 
 				return `Game started succesfully!\n${this.formatPlayerlist(this.games[owner.id].players)}`
 			} else {

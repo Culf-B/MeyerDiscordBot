@@ -10,10 +10,9 @@ module.exports = {
 			if (manager.isUserAwaited(interaction.user.id)){
 
 				let game = manager.games[manager.awaitingUsers[interaction.user.id]]
-				console.log(game)
-				console.log(game.awaitedAction)
+
 				if (game.awaitedAction == "roll"){
-					let roll = game.roll(interaction.user.id)
+					let roll = game.roll()
 					let rollText = `${roll[0]}${roll[1]}`
 					let value = numbers[roll[0].toString()][roll[1].toString()]
 					if (names[value]){
