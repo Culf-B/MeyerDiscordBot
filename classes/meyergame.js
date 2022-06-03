@@ -84,6 +84,7 @@ module.exports = {
 				this.messageToReturn = `${this.players[this.rollerIndex].tag} got ${this.currentRoll}!\n${this.players[this.currentPlayerIndex].tag} lost ${this.damage} lives.\nThey have ${this.players[this.currentPlayerIndex].lives} lives left.`
 			}
 			this.standard = 21
+			this.standardSaid = 21
 			return this.messageToReturn
 		}
 		this.removeDeadPlayers = function(){
