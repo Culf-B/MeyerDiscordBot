@@ -32,9 +32,12 @@ module.exports = {
 						let nextPlayer = game.say(rollValue)
 						// Give the turn to the next player
 						delete(manager.awaitingUsers[interaction.user.id])
-						manager.awaitingUsers[nextPlayer.id] = game.owner.id
+						game.awaitNewPlayer(nextPlayer.id)
 						// Response
 						await interaction.reply(`${interaction.user.tag} says they got ${rollText}.\n${nextPlayer.tag} do you believe it?`)
+						// Give the turn to the next player
+						delete(manager.awaitingUsers[interaction.user.id])
+						game.awaitNewPlayer(nextPlayer)
 
 					} else {
 						// If they said nothing, it means "That or thereover"

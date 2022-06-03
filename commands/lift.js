@@ -19,6 +19,7 @@ module.exports = {
 							interaction.channel.send(message)
 						});
 					}
+
 				}
 			}
 			else {

@@ -23,6 +23,17 @@ module.exports = {
 			}
 			return false
 		}
+		this.removePlayer = function(userId){
+			// Remove from active users
+			for (let i in this.activeUsers){
+				if (userId == this.activeUsers[i]) {
+					this.activeUsers.splice(i, 1)
+				}
+			}
+			// Remove from awaited users
+			delete this.awaitingUsers[userId]
+		}
+
 		this.newGame = function(owner){
 			if (!this.isUserActive(owner.id)){
 				this.activeUsers.push(owner.id)
@@ -34,10 +45,13 @@ module.exports = {
 		}
 		this.startGame = function(owner, channel){
 			if (owner.tag in this.queues) {
-				this.games[owner.id] = new Game.Meyer(owner, Object.assign([],this.queues[owner.tag].players), channel) // Object.assign clones the object and not just the reference
+				this.games[owner.id] = new Game.Meyer(this, owner, Object.assign([],this.queues[owner.tag].players), channel) // Object.assign clones the object and not just the reference
 				delete this.queues[owner.tag]
 				
-				this.awaitingUsers[owner.id] = owner.id
+				this.games[owner.id].awaitNewPlayer(owner)
+				
+				console.log(`Started game ${owner.id}`)
+				console.log(`Active games:\n${this.games}`)
 
 				return `Game started succesfully!\n${this.formatPlayerlist(this.games[owner.id].players)}`
 			} else {
@@ -65,6 +79,11 @@ module.exports = {
 				});
 			this.tempPlayers += "```"
 			return this.tempPlayers
+		}
+		this.end = function(gameId){
+			delete this.games[gameId]
+			console.log(`Game ${gameId} ended!`)
+			console.log(`Active games:\n${this.games}`)
 		}
 
 	}

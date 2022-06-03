@@ -1,7 +1,8 @@
 const { numbers, names, rolls } = require("../numbers.json")
 
 module.exports = {
-	Meyer: function(owner, players, channel){
+	Meyer: function(manager, owner, players, channel){
+		this.manager = manager
 		this.channel = channel
 		this.owner = owner
 		this.awaitedAction = "roll"
@@ -91,12 +92,41 @@ module.exports = {
 				if (player.lives <= 0){
 					this.deathMessages.push(`${player.tag} has died!`)
 					this.deadPlayerIndex = this.players.indexOf(player);
-					if (this.deadPlayerIndex !== -1) {
+					if (this.deadPlayerIndex !== -1) {	
+						// Make sure a new player is awaited
+						if (this,manager.isUserAwaited(this.players[this.deadPlayerIndex].id)){
+							this.awaitedAction = "roll"
+							this.awaitNewPlayer(this.players[this.deadPlayerIndex])
+						}
+						// Remove player from manager
+						this.manager.removePlayer(this.players[this.deadPlayerIndex].id)
+						// Remove from current game
 						this.players.splice(this.deadPlayerIndex, 1);
+						// Is the game done?
+						this.isGameDone()
 					}
 				}
 			})
+
 			return this.deathMessages
+		}
+		this.isGameDone = function(){
+			if (this.players.length == 1){
+				this.channel.send(`Congratulations ${this.players[0]}, you won the game!`)
+				this.manager.end(this.owner.id)
+				return true
+			}
+			else if (this.players.length == 0){
+				this.manager.end(this.owner.id)
+				return true
+			}
+			else {
+				return false
+			}
+		}
+		this.awaitNewPlayer = function(user){
+			this.manager.awaitingUsers[user.id] = this.owner.id
+			this.channel.send(`<@${user.id}> it is your turn to ${this.awaitedAction}`)
 		}
 	}
 }
